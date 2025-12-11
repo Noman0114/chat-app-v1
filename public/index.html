@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Chat - Infiltrated</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: #0d0208;
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+            margin-bottom: 20px;
+        }
+
+        #login-container, #chat-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #chat-container {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 15px #00ff00;
+            padding: 20px;
+        }
+
+        #messages {
+            flex-grow: 1;
+            width: 100%;
+            overflow-y: auto;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: rgba(0, 20, 0, 0.5);
+            /* FIX: Integrated the scanline effect as a background image that scrolls */
+            background-image: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            position: relative;
+        }
+
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 0;
+            background-color: transparent;
+            word-wrap: break-word;
+        }
+
+        .message .username {
+            font-weight: 700;
+            color: #00ff00;
+            /* text-shadow: 0 0 5px #00ff00, 0 0 8px #00ff00; */
+        }
+        
+        .message .message-text {
+            color: #ffffff;
+        }
+
+        .message .timestamp {
+            font-size: 0.8em;
+            color: #009900;
+            margin-left: 10px;
+        }
+
+        .system-message {
+            color: #009900;
+            font-style: italic;
+            text-align: center;
+            margin: 5px 0;
+            padding: 5px;
+            background-color: transparent;
+        }
+
+        .system-message.error {
+            color: #ff0000;
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+
+        #form {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+        }
+
+        #input, #username-input, #password-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #00ff00;
+            border-radius: 0;
+            background-color: #000;
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+        }
+
+        #input:focus, #username-input:focus, #password-input:focus {
+            outline: none;
+            box-shadow: 0 0 8px #00ff00;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: transparent;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            cursor: pointer;
+            border-radius: 0;
+            text-shadow: 0 0 5px #00ff00;
+            font-family: 'Fira Code', monospace;
+        }
+
+        button:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        #username-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 300px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        @media (min-width: 600px) {
+            .form-group {
+                flex-direction: row;
+            }
+        }
+
+        .error-message {
+            color: #ff0000;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            color: #009900;
+            padding: 10px;
+        }
+
+        .admin-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #009900;
+            text-decoration: none;
+        }
+
+        .admin-link:hover {
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        .created{
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            
+        }
+    </style>
+</head>
+<body>
+    <div id="login-container">
+        <div class="created">
+            CREATED BY: <a href="https://github.com/Noman0114" target="_blank">NUMAN</a>
+        </div>
+        <div>
+            <h1>Welcome to the OPEN CHAT</h1>
+            <form id="username-form">
+                <div class="form-group">
+                    <input id="username-input" type="text" placeholder="Enter Callsign" required />
+                </div>
+                <button type="submit">Join</button>
+            </form>
+            <div id="username-error" class="error-message">Invalid Credentials</div>
+            <a href="/admin" class="admin-link">Admin Console</a>
+        </div>
+    </div>
+
+    <div id="chat-container">
+        <div class="created">
+            CREATED BY: <a href="https://github.com/Noman0114" target="_blank">NUMAN</a>
+        </div>
+        <h1>OPEN CHAT v2.1</h1>
+        <div id="messages">
+            <div class="loading">Establishing Secure Connection...</div>
+        </div>
+        <form id="form">
+            <input id="input" autocomplete="off" placeholder="Transmit Message..." />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const loginContainer = document.getElementById('login-container');
+        const chatContainer = document.getElementById('chat-container');
+        const usernameForm = document.getElementById('username-form');
+        const usernameInput = document.getElementById('username-input');
+        const passwordInput = null;
+        const usernameError = document.getElementById('username-error');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+
+        // Format timestamp
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Add message to chat
+        function addMessage(data) {
+            const item = document.createElement('div');
+            item.className = 'message';
+            item.innerHTML = `
+                <span class="username">${data.username}:</span>
+                <span class="message-text">${data.message}</span>
+                <span class="timestamp">${formatTimestamp(data.timestamp)}</span>
+            `;
+            messages.appendChild(item);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Add system message
+        function addSystemMessage(message, isError = false) {
+            const item = document.createElement('div');
+            item.className = `system-message ${isError ? 'error' : ''}`;
+            item.textContent = message;
+            messages.appendChild(item);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Handle forced logout
+        function handleLogout(message) {
+            chatContainer.style.display = 'none';
+            loginContainer.style.display = 'flex';
+            usernameError.textContent = message;
+            usernameError.style.display = 'block';
+            usernameInput.value = '';
+            usernameInput.focus();
+        }
+
+        // Handle username submission
+        usernameForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            if (username) {
+                socket.emit('join', username);
+            } else {
+                usernameError.style.display = 'block';
+            }
+        });
+
+        // Handle authentication error
+        socket.on('auth error', (error) => {
+            usernameError.textContent = error;
+            usernameError.style.display = 'block';
+        });
+
+        // Handle forced logout
+        socket.on('force logout', (message) => {
+            handleLogout(message);
+        });
+
+        // Handle successful authentication
+        socket.on('user joined', (username) => {
+            if (username === usernameInput.value.trim()) {
+                loginContainer.style.display = 'none';
+                chatContainer.style.display = 'flex';
+                input.focus();
+            } else {
+                addSystemMessage(`User << ${username} >> has connected.`);
+            }
+        });
+
+        // Handle chat message submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = input.value.trim();
+            if (message) {
+                socket.emit('chat message', message);
+                input.value = '';
+            }
+        });
+
+        // Handle incoming chat messages
+        socket.on('chat message', (data) => {
+            if (data && data.username && data.message) {
+                addMessage(data);
+            }
+        });
+
+        // Handle loading previous messages
+        socket.on('load messages', (msgs) => {
+            const loadingMessage = document.querySelector('.loading');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            msgs.forEach(message => addMessage(message));
+        });
+
+        // Handle user left notification
+        socket.on('user left', (username) => {
+            addSystemMessage(`User << ${username} >> has disconnected.`);
+        });
+
+        // Handle errors
+        socket.on('error', (error) => {
+            console.error('Socket error:', error);
+            addSystemMessage(`System Error: ${error}`, true);
+        });
+
+        // Handle disconnection
+        socket.on('disconnect', () => {
+            if (chatContainer.style.display !== 'none') {
+                handleLogout('Connection to server lost. Re-authenticating...');
+            }
+        });
+
+        // Handle chat cleared broadcast
+        socket.on('chat cleared', () => {
+            messages.innerHTML = '';
+            addSystemMessage('Chat history was cleared by admin');
+        });
+
+        // Focus username input on page load
+        usernameInput.focus();
+    </script>
+</body>
+</html>

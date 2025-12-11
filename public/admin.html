@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Admin Panel</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+        .success {
+            color: green;
+            margin-top: 10px;
+            display: none;
+        }
+        .admin-list {
+            margin-top: 30px;
+        }
+        .admin-list h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chat Admin Panel</h1>
+
+        <div id="authSection">
+            <div class="form-group">
+                <label for="admin_login_password">Enter Admin Password:</label>
+                <input type="password" id="admin_login_password" placeholder="Enter admin password" required>
+            </div>
+            <button onclick="adminLogin()">Login</button>
+        </div>
+
+        <div id="panelSection" style="display:none;">
+            <div class="form-group">
+                <button onclick="clearChat()">Clear All Chat</button>
+            </div>
+
+            <div class="admin-list">
+                <h2>Online Users</h2>
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">Back to Chat</a>
+    </div>
+
+    <script>
+        let adminToken = localStorage.getItem('adminToken') || '';
+        if (adminToken) {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('panelSection').style.display = 'block';
+            loadUsers();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        async function adminLogin() {
+            const password = document.getElementById('admin_login_password').value.trim();
+            if (!password) return showError('Please enter password');
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const data = await res.json();
+                if (!res.ok) return showError(data.error || 'Login failed');
+                adminToken = data.token;
+                localStorage.setItem('adminToken', adminToken);
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('panelSection').style.display = 'block';
+                showSuccess('Logged in');
+                loadUsers();
+            } catch (e) {
+                showError('Error logging in');
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'x-admin-token': adminToken }
+                });
+                if (res.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    adminToken = '';
+                    document.getElementById('authSection').style.display = 'block';
+                    document.getElementById('panelSection').style.display = 'none';
+                    return;
+                }
+                const data = await res.json();
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = '';
+                (data.users || []).forEach(u => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${u}</td>`;
+                    usersList.appendChild(row);
+                });
+            } catch (e) {
+                showError('Error loading users');
+            }
+        }
+
+        async function clearChat() {
+            try {
+                const res = await fetch('/api/admin/clear', {
+                    method: 'POST',
+                    headers: { 'x-admin-token': adminToken }
+                });
+                const data = await res.json();
+                if (!res.ok) return showError(data.error || 'Failed to clear');
+                showSuccess('Chat cleared');
+            } catch (e) {
+                showError('Error clearing chat');
+            }
+        }
+    </script>
+</body>
+</html> 
