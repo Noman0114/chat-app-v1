@@ -13,8 +13,8 @@
         }
 
         body {
-            background-color: #0d0208;
-            color: #00ff00;
+            background-color: #ffe6f2;
+            color: #ff1493;
             font-family: 'Fira Code', monospace;
             display: flex;
             justify-content: center;
@@ -23,7 +23,7 @@
 
         h1 {
             text-align: center;
-            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+            text-shadow: 0 0 5px #ff1493, 0 0 10px #ff69b4;
             margin-bottom: 20px;
         }
 
@@ -42,8 +42,8 @@
             display: none;
             max-width: 1000px;
             margin: 0 auto;
-            border: 1px solid #00ff00;
-            box-shadow: 0 0 15px #00ff00;
+            border: 1px solid #ff1493;
+            box-shadow: 0 0 15px #ff69b4;
             padding: 20px;
         }
 
@@ -51,14 +51,14 @@
             flex-grow: 1;
             width: 100%;
             overflow-y: auto;
-            border: 1px solid #00ff00;
+            border: 1px solid #ff1493;
             padding: 10px;
             margin-bottom: 10px;
-            background-color: rgba(0, 20, 0, 0.5);
-            /* FIX: Integrated the scanline effect as a background image that scrolls */
-            background-image: 
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-color: rgba(255, 255, 255, 0.8);
+            /* Love theme background with subtle heart-like patterns */
+            background-image:
+                linear-gradient(rgba(255, 182, 193, 0.1) 50%, rgba(255, 255, 255, 0.1) 50%),
+                linear-gradient(90deg, rgba(255, 20, 147, 0.03), rgba(255, 105, 180, 0.02), rgba(255, 20, 147, 0.03));
             background-size: 100% 2px, 3px 100%;
             position: relative;
         }
@@ -73,22 +73,22 @@
 
         .message .username {
             font-weight: 700;
-            color: #00ff00;
-            /* text-shadow: 0 0 5px #00ff00, 0 0 8px #00ff00; */
+            color: #ff1493;
+            /* text-shadow: 0 0 5px #ff1493, 0 0 8px #ff69b4; */
         }
-        
+
         .message .message-text {
-            color: #ffffff;
+            color: #333333;
         }
 
         .message .timestamp {
             font-size: 0.8em;
-            color: #009900;
+            color: #cc0052;
             margin-left: 10px;
         }
 
         .system-message {
-            color: #009900;
+            color: #cc0052;
             font-style: italic;
             text-align: center;
             margin: 5px 0;
@@ -97,8 +97,8 @@
         }
 
         .system-message.error {
-            color: #ff0000;
-            background-color: rgba(255, 0, 0, 0.1);
+            color: #dc143c;
+            background-color: rgba(255, 20, 147, 0.1);
         }
 
         #form {
@@ -110,32 +110,32 @@
         #input, #username-input, #password-input {
             flex-grow: 1;
             padding: 10px;
-            border: 1px solid #00ff00;
+            border: 1px solid #ff1493;
             border-radius: 0;
-            background-color: #000;
-            color: #00ff00;
+            background-color: #ffffff;
+            color: #333333;
             font-family: 'Fira Code', monospace;
         }
 
         #input:focus, #username-input:focus, #password-input:focus {
             outline: none;
-            box-shadow: 0 0 8px #00ff00;
+            box-shadow: 0 0 8px #ff69b4;
         }
 
         button {
             padding: 10px 20px;
             background-color: transparent;
-            color: #00ff00;
-            border: 1px solid #00ff00;
+            color: #ff1493;
+            border: 1px solid #ff1493;
             cursor: pointer;
             border-radius: 0;
-            text-shadow: 0 0 5px #00ff00;
+            text-shadow: 0 0 5px #ff69b4;
             font-family: 'Fira Code', monospace;
         }
 
         button:hover {
-            background-color: rgba(0, 255, 0, 0.2);
-            box-shadow: 0 0 10px #00ff00;
+            background-color: rgba(255, 20, 147, 0.2);
+            box-shadow: 0 0 10px #ff69b4;
         }
 
         #username-form {
@@ -158,7 +158,7 @@
         }
 
         .error-message {
-            color: #ff0000;
+            color: #dc143c;
             margin-top: 10px;
             display: none;
             text-align: center;
@@ -166,7 +166,7 @@
 
         .loading {
             text-align: center;
-            color: #009900;
+            color: #cc0052;
             padding: 10px;
         }
 
@@ -174,19 +174,29 @@
             display: block;
             text-align: center;
             margin-top: 20px;
-            color: #009900;
+            color: #cc0052;
             text-decoration: none;
         }
 
         .admin-link:hover {
-            color: #00ff00;
-            text-shadow: 0 0 5px #00ff00;
+            color: #ff1493;
+            text-shadow: 0 0 5px #ff69b4;
         }
         .created{
             position: absolute;
             bottom: 0;
             right: 0;
-            
+            color: #cc0052;
+        }
+
+        .created a {
+            color: #ff1493;
+            text-decoration: none;
+        }
+
+        .created a:hover {
+            color: #ff69b4;
+            text-shadow: 0 0 3px #ff69b4;
         }
     </style>
 </head>
@@ -212,7 +222,7 @@
         <div class="created">
             CREATED BY: <a href="https://github.com/Noman0114" target="_blank">NUMAN</a>
         </div>
-        <h1>OPEN CHAT v2.1</h1>
+        <h1>For My Love My Baby ❤❤❤ 😘😘😘</h1>
         <div id="messages">
             <div class="loading">Establishing Secure Connection...</div>
         </div>

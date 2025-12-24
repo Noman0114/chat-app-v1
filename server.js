@@ -31,7 +31,7 @@ app.get('/admin', (req, res) => {
 app.post('/api/admin/login', (req, res) => {
     const { password } = req.body || {};
     if (!password) return res.status(400).json({ error: 'Password required' });
-    if (password !== 'nomanahmad0114') return res.status(401).json({ error: 'Invalid password' });
+    if (password !== 'numanahmad0114') return res.status(401).json({ error: 'Invalid password' });
     const token = crypto.randomBytes(24).toString('hex');
     adminSessions.set(token, { username: 'admin', createdAt: Date.now() });
     res.json({ token });
